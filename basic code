@@ -1,0 +1,30 @@
+import requests
+import io
+from PIL import Image
+import streamlit as st
+
+# Hugging Face API Key
+API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2"
+headers = {"Authorization": "Bearer YOUR_HUGGINGFACE_API_KEY"}
+
+# Function to generate image
+def generate_image(prompt):
+    payload = {"inputs": prompt}
+    response = requests.post(API_URL, headers=headers, json=payload)
+    
+    if response.status_code == 200:
+        image = Image.open(io.BytesIO(response.content))
+        return image
+    else:
+        return None
+
+# Streamlit UI
+st.title("AI-Powered Image Generator")
+prompt = st.text_input("Enter a prompt for the AI:")
+if st.button("Generate Image"):
+    image = generate_image(prompt)
+    if image:
+        st.image(image, caption="Generated Image")
+    else:
+        st.write("Error generating image. Try again!")
+
